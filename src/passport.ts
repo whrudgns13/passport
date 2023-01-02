@@ -3,11 +3,12 @@ import { Strategy } from "passport-local";
 
 const authData = {
     email : "whrudgns13",
-    password : "745613",
-    nickname : "joga"
+    password : "12345",
+    nickname : "jogayo"
 };
 
 passport.use(new Strategy((username , password, done) => {
+    console.log(username,password)
     if(username!==authData.email){
         return done(null,false,{message : "사용자가 없습니다."})
     }
@@ -25,11 +26,11 @@ passport.serializeUser(function(user, done) {
     done(null, user);
 });
 
-// passport.deserializeUser(function(user, done) {
-//     console.log('deserializeUser() 호출됨.');
-//     console.log(user);
+passport.deserializeUser(function(user : string, done) {
+    console.log('deserializeUser() 호출됨.');
+    console.log(user);
 
-//     done(null, user);
-// })
+    done(null, user);
+})
 
 export default passport

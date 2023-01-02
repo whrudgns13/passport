@@ -7,10 +7,11 @@ const passport_1 = __importDefault(require("passport"));
 const passport_local_1 = require("passport-local");
 const authData = {
     email: "whrudgns13",
-    password: "745613",
-    nickname: "joga"
+    password: "12345",
+    nickname: "jogayo"
 };
 passport_1.default.use(new passport_local_1.Strategy((username, password, done) => {
+    console.log(username, password);
     if (username !== authData.email) {
         return done(null, false, { message: "사용자가 없습니다." });
     }
@@ -24,9 +25,9 @@ passport_1.default.serializeUser(function (user, done) {
     console.log(user);
     done(null, user);
 });
-// passport.deserializeUser(function(user, done) {
-//     console.log('deserializeUser() 호출됨.');
-//     console.log(user);
-//     done(null, user);
-// })
+passport_1.default.deserializeUser(function (user, done) {
+    console.log('deserializeUser() 호출됨.');
+    console.log(user);
+    done(null, user);
+});
 exports.default = passport_1.default;
