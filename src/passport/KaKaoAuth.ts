@@ -8,7 +8,6 @@ passport.use('kakao', new Strategy({
     clientID: CLIENTID,
     callbackURL: '/auth/kakao/callback',
   }, async (accessToken, refreshToken, profile, done) => {
-    //console.log(profile);
     console.log(accessToken);
     console.log(refreshToken);
     console.log(profile);
@@ -19,18 +18,13 @@ passport.use('kakao', new Strategy({
 
 passport.serializeUser(function(user, done) {
   console.log('serializeUser() 호출됨.');
-  console.log(user);
-
   done(null, user);
 });
 
 passport.deserializeUser(function(user : string, done) {
   console.log('deserializeUser() 호출됨.');
   console.log(user);
-
   done(null, user);
 })
-
-
 
 export default passport;

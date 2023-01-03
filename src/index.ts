@@ -1,8 +1,9 @@
 import express from "express";
 //import passport from "./passport";
-import passport from "./KaKaoAuth";
+import passport from "./passport/KaKaoAuth";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
+import auth from "./router/auth";
 
 var session = require('express-session')
 var FileStore = require('session-file-store')(session)
@@ -15,37 +16,43 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(session({
     secret: 'asadlfkj!@#!@#dfgasdgs',
-    resave: false,
-    saveUninitialized: true,
-    store: new FileStore()
+    resave: true,
+    saveUninitialized: false,
 }));
 
 app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use((req, res, next)=>{
+    console.log(req.user);
+    next();
+})
+
 app.get("/",(req,res)=>{
-    console.log("Test");
-    res.send(`
-        <h1>Hello Express</h1>
-        <a href="./kakao"> login </a>
-    `);
+    res.render("home");
 })
 
+app.use("/auth",auth);
 
-app.get('/kakao', passport.authenticate('kakao'));
-app.get("/auth/kakao",(req,res)=>{
-    res.send("kakao");
+app.get("/test",(req,res)=>{
+    res.send("test")
 })
 
-app.post("/auth/kakao",(req,res)=>{
-    res.send("post kakao");
-})
+app.get('/login', passport.authenticate('kakao'));
+app.get('/logout', (req,res,next)=>{
+    req.logout((err)=>{
+        if(err){
+            console.log(err);
+            return next(err)
+        };
+        res.redirect("/");
+    });
+});
 
-app.get('/auth/kakao/callback', passport.authenticate('kakao', {
-    failureRedirect: '/',
-    successRedirect : "/auth/kakao"
-}));
+app.listen(3000,()=>{
+    console.log("server open");
+})
 
 // app.post("/login-prosess",passport.authenticate("local",{
 //     successRedirect : "/logined",
@@ -56,7 +63,3 @@ app.get('/auth/kakao/callback', passport.authenticate('kakao', {
 // app.get("/login",(req,res)=>{
 //     res.render("login")
 // })
-
-app.listen(3001,()=>{
-    console.log("server open");
-})

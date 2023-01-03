@@ -21,15 +21,11 @@ passport.use(new Strategy((username , password, done) => {
 
 passport.serializeUser(function(user, done) {
     console.log('serializeUser() 호출됨.');
-    console.log(user);
-
     done(null, user);
 });
 
 passport.deserializeUser(function(user : string, done) {
     console.log('deserializeUser() 호출됨.');
-    console.log(user);
-
     done(null, user);
 })
 

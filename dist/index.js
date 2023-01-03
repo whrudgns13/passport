@@ -5,9 +5,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 //import passport from "./passport";
-const KaKaoAuth_1 = __importDefault(require("./KaKaoAuth"));
+const KaKaoAuth_1 = __importDefault(require("./passport/KaKaoAuth"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const body_parser_1 = __importDefault(require("body-parser"));
+const auth_1 = __importDefault(require("./router/auth"));
 var session = require('express-session');
 var FileStore = require('session-file-store')(session);
 var flash = require('connect-flash');
@@ -19,31 +20,37 @@ app.use(body_parser_1.default.json());
 app.use((0, cookie_parser_1.default)());
 app.use(session({
     secret: 'asadlfkj!@#!@#dfgasdgs',
-    resave: false,
-    saveUninitialized: true,
-    store: new FileStore()
+    resave: true,
+    saveUninitialized: false,
 }));
 app.use(flash());
 app.use(KaKaoAuth_1.default.initialize());
 app.use(KaKaoAuth_1.default.session());
+app.use((req, res, next) => {
+    console.log(req.user);
+    next();
+});
 app.get("/", (req, res) => {
-    console.log("Test");
-    res.send(`
-        <h1>Hello Express</h1>
-        <a href="./kakao"> login </a>
-    `);
+    res.render("home");
 });
-app.get('/kakao', KaKaoAuth_1.default.authenticate('kakao'));
-app.get("/auth/kakao", (req, res) => {
-    res.send("kakao");
+app.use("/auth", auth_1.default);
+app.get("/test", (req, res) => {
+    res.send("test");
 });
-app.post("/auth/kakao", (req, res) => {
-    res.send("post kakao");
+app.get('/login', KaKaoAuth_1.default.authenticate('kakao'));
+app.get('/logout', (req, res, next) => {
+    req.logout((err) => {
+        if (err) {
+            console.log(err);
+            return next(err);
+        }
+        ;
+        res.redirect("/");
+    });
 });
-app.get('/auth/kakao/callback', KaKaoAuth_1.default.authenticate('kakao', {
-    failureRedirect: '/',
-    successRedirect: "/auth/kakao"
-}));
+app.listen(3000, () => {
+    console.log("server open");
+});
 // app.post("/login-prosess",passport.authenticate("local",{
 //     successRedirect : "/logined",
 //     failureRedirect : "/login",
@@ -52,6 +59,3 @@ app.get('/auth/kakao/callback', KaKaoAuth_1.default.authenticate('kakao', {
 // app.get("/login",(req,res)=>{
 //     res.render("login")
 // })
-app.listen(3001, () => {
-    console.log("server open");
-});
